@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupPaymentButton() {
+    // Set the Stripe publishable key if it's not already set
+    if (!localStorage.getItem('stripeKey')) {
+        localStorage.setItem('stripeKey', 'YOUR_STRIPE_PUBLISHABLE_KEY'); // Replace with your actual key
+    }
+
     const stripeKey = localStorage.getItem('stripeKey');
     if (!stripeKey) {
         console.error('Stripe publishable key is missing.');
