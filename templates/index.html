@@ -4,155 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://js.stripe.com/v3/"></script>
-    <title>Product Setup</title>
+    <title>Online Shop</title>
 </head>
 <body>
     <header>
-        <h1>Setup Products</h1>
+        <h1>Welcome to Our Online Shop</h1>
     </header>
     <main>
-        <form id="productForm">
-            <label for="facebookUrl">Facebook JPEG URL:</label>
-            <input type="text" id="facebookUrl" required>
-            <label for="stripeKey">Stripe Publishable Key:</label>
-            <input type="text" id="stripeKey" required>
-            <button type="submit">Create Products</button>
-        </form>
-        <form id="newProductForm">
-            <h2>Create New Product</h2>
-            <label for="newProductName">Product Name:</label>
-            <input type="text" id="newProductName" required>
-            
-            <label for="newProductImageUrl">Image URL:</label>
-            <input type="text" id="newProductImageUrl" required>
-            
-            <label for="newProductDescription">Description:</label>
-            <input type="text" id="newProductDescription" required>
-            
-            <label for="newProductStripeKey">Stripe Publishable Key:</label>
-            <input type="text" id="newProductStripeKey" required>
-            
-            <button type="submit">Create Product</button>
-        </form>
-        <section class="products">
+        <section id="setupSection">
+            <h2>Setup</h2>
+            <form id="setupForm">
+                <label for="stripeKey">Stripe Publishable Key:</label>
+                <input type="text" id="stripeKey" name="stripeKey" required>
+                <label for="facebookUrl">Facebook Image URL:</label>
+                <input type="url" id="facebookUrl" name="facebookUrl" required>
+                <button type="submit">Save</button>
+            </form>
+        </section>
+        <section class="products" style="display: none;">
             <h2>Products</h2>
             <div class="product-list" id="product-list">
                 <!-- Products will be loaded here dynamically -->
             </div>
+            <div class="pagination">
+                <button id="prevPage" disabled>Previous</button>
+                <span id="pageInfo"></span>
+                <button id="nextPage">Next</button>
+            </div>
         </section>
-        <form id="key-url-form" style="display: none;">
-            <label for="key">Enter Key:</label>
-            <input type="text" id="key" name="key" required>
-
-            <label for="facebook-url">Enter Facebook URL:</label>
-            <input type="url" id="facebook-url" name="facebook-url" required>
-
-            <div id="card-element"><!-- A Stripe Element will be inserted here. --></div>
-            <button type="submit">Pay</button>
-        </form>
-
-        <div id="result"></div>
     </main>
+    <script src="script.js"></script>
     <script>
-        const productForm = document.getElementById('productForm');
-        productForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const facebookUrl = document.getElementById('facebookUrl').value;
+        document.getElementById('setupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
             const stripeKey = document.getElementById('stripeKey').value;
+            const facebookUrl = document.getElementById('facebookUrl').value;
+            localStorage.setItem('stripeKey', stripeKey);
+            localStorage.setItem('facebookUrl', facebookUrl);
+            disableSetupForm();
+            loadProducts();
+        });
+
+        function disableSetupForm() {
+            document.getElementById('setupForm').style.display = 'none';
+        }
+
+        function loadProducts(page = 1) {
+            const stripeKey = localStorage.getItem('stripeKey');
+            const facebookUrl = localStorage.getItem('facebookUrl');
+            if (!stripeKey || !facebookUrl) {
+                return;
+            }
+
+            document.querySelector('.products').style.display = 'block';
+            const productsPerPage = 20;
             const productCatalog = [];
             for (let i = 1; i <= 200; i++) {
-                productCatalog.push({ id: i, name: `Product ${i}`, imageUrl: `${facebookUrl}${i}.jpg`, description: `This is product ${i}`, price: 10.99 });
+                productCatalog.push({ id: i, name: `Product ${i}`, imageUrl: `${facebookUrl}${i}.jpg` });
             }
 
             const productList = document.getElementById('product-list');
-            productCatalog.forEach(product => {
+            productList.innerHTML = '';
+            const start = (page - 1) * productsPerPage;
+            const end = start + productsPerPage;
+            const paginatedProducts = productCatalog.slice(start, end);
+
+            paginatedProducts.forEach(product => {
                 const productItem = document.createElement('a');
                 productItem.href = `product${product.id}.html`;
                 productItem.className = 'product-item';
                 productItem.innerHTML = `
-                    <div class='product'>
-                        <h2>${product.name}</h2>
-                        <p>${product.description}</p>
-                        <p>Price: ${product.price}</p>
-                    </div>
+                    <img src="${product.imageUrl}" alt="${product.name}">
+                    <h3>${product.name}</h3>
                 `;
                 productList.appendChild(productItem);
-
-                const productPageContent = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <link rel="stylesheet" href="../styles.css">
-                        <title>${product.name}</title>
-                    </head>
-                    <body>
-                        <header>
-                            <h1>${product.name}</h1>
-                        </header>
-                        <main>
-                            <img src="${product.imageUrl}" alt="${product.name}">
-                            <p>${product.description}</p>
-                            <button id="payButton" onclick="purchaseProduct(${product.id})">Send Money on Facebook</button>
-                            <form id="key-url-form" style="display: none;">
-                                <label for="key">Enter Key:</label>
-                                <input type="text" id="key" name="key" required>
-
-                                <label for="facebook-url">Enter Facebook URL:</label>
-                                <input type="url" id="facebook-url" name="facebook-url" required>
-
-                                <div id="card-element"><!-- A Stripe Element will be inserted here. --></div>
-                                <button type="submit">Pay</button>
-                            </form>
-
-                            <div id="result"></div>
-                        </main>
-                        <script src="../script.js"></script>
-                        <script>
-                            const stripe = Stripe('${stripeKey}'); // Replace with your public key
-                            const elements = stripe.elements();
-                            const cardElement = elements.create('card');
-                            cardElement.mount('#card-element');
-
-                            document.getElementById('key-url-form').addEventListener('submit', async function(event) {
-                                event.preventDefault();
-
-                                const key = document.getElementById('key').value;
-                                const facebookUrl = document.getElementById('facebook-url').value;
-
-                                // Create a payment intent on the server
-                                const response = await fetch('/create-payment-intent', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ amount: 1000 }) // Amount in cents
-                                });
-                                const { clientSecret } = await response.json();
-
-                                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-                                    payment_method: {
-                                        card: cardElement,
-                                        billing_details: {
-                                            name: document.getElementById('key').value,
-                                        },
-                                    },
-                                });
-                            });
-                        </script>
-                    </body>
-                    </html>
-                `;
-                const blob = new Blob([productPageContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `product${product.id}.html`; 
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url); 
             });
+
+            document.getElementById('pageInfo').innerText = `Page ${page} of ${Math.ceil(productCatalog.length / productsPerPage)}`;
+            document.getElementById('prevPage').disabled = page === 1;
+            document.getElementById('nextPage').disabled = page === Math.ceil(productCatalog.length / productsPerPage);
+        }
+
+        document.getElementById('prevPage').addEventListener('click', () => {
+            const currentPage = parseInt(document.getElementById('pageInfo').innerText.split(' ')[1]);
+            loadProducts(currentPage - 1);
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            const currentPage = parseInt(document.getElementById('pageInfo').innerText.split(' ')[1]);
+            loadProducts(currentPage + 1);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const stripeKey = localStorage.getItem('stripeKey');
+            const facebookUrl = localStorage.getItem('facebookUrl');
+            if (stripeKey && facebookUrl) {
+                disableSetupForm();
+                loadProducts();
+            }
         });
     </script>
 </body>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <title>Product 1</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <header>
+        <h1>Product 1</h1>
+    </header>
+    <main>
+        <img src="https://facebook.com/path/to/image1.jpg" alt="Product 1">
+        <p>Description of Product 1.</p>
+        <button id="payButton">Send Money on Facebook</button>
+    </main>
+    <script src="../script.js"></script>
+    <script>
+        const stripe = Stripe('your-publishable-key'); // Replace with your actual Stripe publishable key
+
+        document.getElementById('payButton').addEventListener('click', async () => {
+            const response = await fetch('/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: 1000, productId: 'product1' }) // Amount in cents and product ID
+            });
+
+            const { clientSecret } = await response.json();
+
+            const { error } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement, // cardElement is the card input element you create with Stripe.js
+                    billing_details: {
+                        name: 'Customer Name',
+                    },
+                },
+            });
+
+            if (error) {
+                alert(error.message);
+            } else {
+                alert('Payment successful!');
+            }
+        });
+    </script>
+</body>
+</html>
