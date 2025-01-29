@@ -19,6 +19,22 @@
             <input type="text" id="stripeKey" required>
             <button type="submit">Create Products</button>
         </form>
+        <form id="newProductForm">
+            <h2>Create New Product</h2>
+            <label for="newProductName">Product Name:</label>
+            <input type="text" id="newProductName" required>
+            
+            <label for="newProductImageUrl">Image URL:</label>
+            <input type="text" id="newProductImageUrl" required>
+            
+            <label for="newProductDescription">Description:</label>
+            <input type="text" id="newProductDescription" required>
+            
+            <label for="newProductStripeKey">Stripe Publishable Key:</label>
+            <input type="text" id="newProductStripeKey" required>
+            
+            <button type="submit">Create Product</button>
+        </form>
         <section class="products">
             <h2>Products</h2>
             <div class="product-list" id="product-list">
