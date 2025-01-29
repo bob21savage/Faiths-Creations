@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <title>Product Catalog</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <header>
+        <h1>Product Catalog</h1>
+    </header>
+    <main>
+        <label for="productSelect">Select a Product:</label>
+        <select id="productSelect">
+            <option value="">--Select a Product--</option>
+            <script>
+                const totalProducts = 200; // Define the total number of products
+                const facebookUrl = 'https://your-facebook-url.com/path/to/image/'; // This should come from the form in index.html
+                const products = {};
+                for (let i = 1; i <= totalProducts; i++) {
+                    products[i] = {
+                        image: `${facebookUrl}${i}.jpg`, // Construct image URL
+                        description: `Description of Product ${i}.`,
+                        price: i * 10 // Assign a price to each product
+                    };
+                    document.write(`<option value="${i}">Product ${i}</option>`);
+                }
+            </script>
+        </select>
+
+        <div class="product-list" id="product-list">
+            <script>
+                for (let i = 1; i <= totalProducts; i++) {
+                    document.write(`
+                        <div class="product-item" onclick="selectProduct(${i})">
+                            <img src="${products[i].image}" alt="Product ${i}">
+                            <h3>Product ${i}</h3>
+                            <p>Price: $${products[i].price}</p>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+
+        <div id="productDetails" style="display: none;">
+            <h2 id="productTitle"></h2>
+            <img id="productImage" src="" alt="Product Image" />
+            <p id="productDescription"></p>
+            <p id="productPrice"></p>
+            <button id="payButton" onclick="purchaseProduct(productId)">Send Money on Facebook</button>
+            <button id="purchaseButton" onclick="purchaseProduct()">Purchase</button>
+            <div id="card-element"></div>
+            <form id="productForm">
+                <input type="text" id="facebookUrl" placeholder="Enter Facebook Image URL">
+                <button type="submit">Upload Image to Facebook</button>
+            </form>
+        </div>
+        <div id="confirmationMessage" style="display: none;"></div>
+    </main>
+    <script src="../script.js"></script>
+    <script>
+        const stripe = Stripe('your-publishable-key'); // Replace with your actual Stripe publishable key
+        const cardElement = document.getElementById('card-element');
+
+        document.getElementById('productSelect').addEventListener('change', function() {
+            const productId = this.value;
+            if (productId) {
+                // Update product details based on the selected product
+                document.getElementById('productTitle').innerText = `Product ${productId}`;
+                document.getElementById('productImage').src = products[productId].image; // Update with actual image URL
+                document.getElementById('productDescription').innerText = products[productId].description; // Update with actual description
+                document.getElementById('productPrice').innerText = `Price: $${products[productId].price}`;
+                document.getElementById('productDetails').style.display = 'block';
+            } else {
+                document.getElementById('productDetails').style.display = 'none';
+            }
+        });
+
+        function selectProduct(productId) {
+            // Update product details based on the selected product
+            document.getElementById('productTitle').innerText = `Product ${productId}`;
+            document.getElementById('productImage').src = products[productId].image;
+            document.getElementById('productDescription').innerText = products[productId].description;
+            document.getElementById('productPrice').innerText = `Price: $${products[productId].price}`;
+            document.getElementById('productDetails').style.display = 'block';
+            document.getElementById('confirmationMessage').style.display = 'none';
+        }
+
+        function purchaseProduct(productId) {
+            const product = products[productId];
+            // Implement Stripe payment logic here using the product information
+            // e.g., create a payment intent with the product details
+            const response = fetch('/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: product.price * 100, productId: `product${productId}` }) // Amount in cents and product ID
+            });
+
+            response.then(data => data.json())
+            .then(data => {
+                const { clientSecret } = data;
+                const { error } = stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement, // cardElement is the card input element you create with Stripe.js
+                        billing_details: {
+                            name: 'Customer Name',
+                        },
+                    },
+                });
+
+                if (error) {
+                    alert(error.message);
+                } else {
+                    alert('Payment successful!');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

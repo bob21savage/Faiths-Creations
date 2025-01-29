@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <title>Product X</title> <!-- Replace X with the product number -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <header>
+        <h1>Product X</h1> <!-- Replace X with the product number -->
+    </header>
+    <main>
+        <header>
+            <h1>Select a Product</h1>
+        </header>
+        <div>
+            <select id="productSelect">
+                <option value="">Select a product</option>
+                {% for i in range(1, 200) %}
+                <option value="{{ i }}">Product {{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div id="productDetails" style="display: none;">
+            <img id="productImage" src="" alt="Product Image" />
+            <p id="productDescription"></p>
+            <button id="payButton" onclick="purchaseProduct(productId)">Send Money on Facebook</button>
+        </div>
+    </main>
+    <script>
+        const facebookUrl = 'https://your-facebook-url.com/path/to/image'; // This should come from the form in index.html
+        const products = {};
+        for (let i = 1; i <= 200; i++) {
+            products[i] = {
+                image: `${facebookUrl}${i}.jpg`, // Construct image URL
+                description: `Description of Product ${i}.`
+            };
+        }
+    </script>
+    <script>
+        function purchaseProduct(productId) {
+            const product = products[productId];
+            // Implement Stripe payment logic here using the product information
+            // e.g., create a payment intent with the product details
+        }
+    </script>
+    <script src="../script.js"></script>
+</body>
+</html>

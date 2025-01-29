@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>Product Setup</title>
+</head>
+<body>
+    <header>
+        <h1>Setup Products</h1>
+    </header>
+    <main>
+        <form id="productForm">
+            <label for="facebookUrl">Facebook JPEG URL:</label>
+            <input type="text" id="facebookUrl" required>
+            <label for="stripeKey">Stripe Publishable Key:</label>
+            <input type="text" id="stripeKey" required>
+            <button type="submit">Create Products</button>
+        </form>
+        <section class="products">
+            <h2>Products</h2>
+            <div class="product-list" id="product-list">
+                <!-- Products will be loaded here dynamically -->
+            </div>
+        </section>
+        <form id="key-url-form" style="display: none;">
+            <label for="key">Enter Key:</label>
+            <input type="text" id="key" name="key" required>
+
+            <label for="facebook-url">Enter Facebook URL:</label>
+            <input type="url" id="facebook-url" name="facebook-url" required>
+
+            <div id="card-element"><!-- A Stripe Element will be inserted here. --></div>
+            <button type="submit">Pay</button>
+        </form>
+
+        <div id="result"></div>
+    </main>
+    <script src="script.js"></script>
+    <script>
+        const productForm = document.getElementById('productForm');
+        productForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const facebookUrl = document.getElementById('facebookUrl').value;
+            const stripeKey = document.getElementById('stripeKey').value;
+            const productCatalog = [];
+            for (let i = 1; i <= 200; i++) {
+                productCatalog.push({ id: i, name: `Product ${i}`, imageUrl: `${facebookUrl}${i}.jpg`, description: `This is product ${i}`, price: 10.99 });
+            }
+
+            const productList = document.getElementById('product-list');
+            productCatalog.forEach(product => {
+                const productItem = document.createElement('a');
+                productItem.href = `product${product.id}.html`;
+                productItem.className = 'product-item';
+                productItem.innerHTML = `
+                    <div class='product'>
+                        <h2>${product.name}</h2>
+                        <p>${product.description}</p>
+                        <p>Price: ${product.price}</p>
+                    </div>
+                `;
+                productList.appendChild(productItem);
+
+                const productPageContent = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <link rel="stylesheet" href="../styles.css">
+                        <title>${product.name}</title>
+                    </head>
+                    <body>
+                        <header>
+                            <h1>${product.name}</h1>
+                        </header>
+                        <main>
+                            <img src="${product.imageUrl}" alt="${product.name}">
+                            <p>${product.description}</p>
+                            <button id="payButton" onclick="purchaseProduct(${product.id})">Send Money on Facebook</button>
+                            <form id="key-url-form" style="display: none;">
+                                <label for="key">Enter Key:</label>
+                                <input type="text" id="key" name="key" required>
+
+                                <label for="facebook-url">Enter Facebook URL:</label>
+                                <input type="url" id="facebook-url" name="facebook-url" required>
+
+                                <div id="card-element"><!-- A Stripe Element will be inserted here. --></div>
+                                <button type="submit">Pay</button>
+                            </form>
+
+                            <div id="result"></div>
+                        </main>
+                        <script src="../script.js"></script>
+                        <script>
+                            const stripe = Stripe('${stripeKey}'); // Replace with your public key
+                            const elements = stripe.elements();
+                            const cardElement = elements.create('card');
+                            cardElement.mount('#card-element');
+
+                            document.getElementById('key-url-form').addEventListener('submit', async function(event) {
+                                event.preventDefault();
+
+                                const key = document.getElementById('key').value;
+                                const facebookUrl = document.getElementById('facebook-url').value;
+
+                                // Create a payment intent on the server
+                                const response = await fetch('/create-payment-intent', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ amount: 1000 }) // Amount in cents
+                                });
+                                const { clientSecret } = await response.json();
+
+                                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                                    payment_method: {
+                                        card: cardElement,
+                                        billing_details: {
+                                            name: document.getElementById('key').value,
+                                        },
+                                    },
+                                });
+                            });
+                        </script>
+                    </body>
+                    </html>
+                `;
+                const blob = new Blob([productPageContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `product${product.id}.html`; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url); 
+            });
+        });
+    </script>
+</body>
+</html>
