@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs'); // Added fs module
+const fs = require('fs');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -15,10 +15,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates', 'index.html'));
 });
 
+// Serve other HTML files
+app.get('/product/:id', (req, res) => {
+    const productId = req.params.id;
+    res.sendFile(path.join(__dirname, 'templates', `product${productId}.html`));
+});
+
 // Handle new product creation
 app.post('/create-product', (req, res) => {
-    const { name, imageUrl, description, stripeKey } = req.body; // Get the Stripe key
-    const productId = Date.now(); // Unique ID based on timestamp
+    const { name, imageUrl, description, stripeKey } = req.body;
+    const productId = Date.now();
     const productPageContent = `
         <!DOCTYPE html>
         <html lang="en">
@@ -51,7 +57,7 @@ app.post('/create-product', (req, res) => {
             </main>
             <script src="../script.js"></script>
             <script>
-                const stripe = Stripe('${stripeKey}'); // Use the provided Stripe key
+                const stripe = Stripe('${stripeKey}');
                 const elements = stripe.elements();
                 const cardElement = elements.create('card');
                 cardElement.mount('#card-element');
@@ -62,11 +68,10 @@ app.post('/create-product', (req, res) => {
                     const key = document.getElementById('key').value;
                     const facebookUrl = document.getElementById('facebook-url').value;
 
-                    // Create a payment intent on the server
                     const response = await fetch('/create-payment-intent', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ amount: 1000 }) // Amount in cents
+                        body: JSON.stringify({ amount: 1000 })
                     });
                     const { clientSecret } = await response.json();
 
@@ -84,7 +89,6 @@ app.post('/create-product', (req, res) => {
         </html>
     `;
 
-    // Save the product page to a file
     fs.writeFile(path.join(__dirname, 'templates', `product_${productId}.html`), productPageContent, (err) => {
         if (err) {
             return res.status(500).send('Error creating product page.');
