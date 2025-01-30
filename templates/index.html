@@ -17,12 +17,11 @@
         </section>
         <section id="setupSection" style="display: none;">
             <h2>Setup</h2>
-            <script>
-                // Edit the Facebook URL here
-                const facebookUrl = "https://example.com/images/"; // Change this URL as needed
-                document.getElementById('facebookUrlDisplay').innerText = facebookUrl;
-            </script>
-            <p>Facebook Image URL is set to: <span id="facebookUrlDisplay">https://example.com/images/</span></p>
+            <form id="setupForm">
+                <label for="facebookUrl">Facebook Image URL:</label>
+                <input type="url" id="facebookUrl" name="facebookUrl" required>
+                <button type="submit">Save</button>
+            </form>
         </section>
         <section class="products" style="display: none;">
             <h2>Products</h2>
@@ -60,8 +59,24 @@
             .catch(error => console.error('Error verifying email sign-in:', error));
         });
 
+        document.getElementById('setupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const facebookUrl = document.getElementById('facebookUrl').value;
+            localStorage.setItem('facebookUrl', facebookUrl);
+            disableSetupForm();
+            loadProducts();
+        });
+
+        function disableSetupForm() {
+            document.getElementById('setupForm').style.display = 'none';
+        }
+
         function loadProducts(page = 1) {
-            const facebookUrl = "https://example.com/images/"; // Change this URL as needed
+            const facebookUrl = localStorage.getItem('facebookUrl');
+            if (!facebookUrl) {
+                return;
+            }
+
             document.querySelector('.products').style.display = 'block';
             const productsPerPage = 20;
             const productCatalog = [];
@@ -102,7 +117,11 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadProducts();
+            const facebookUrl = localStorage.getItem('facebookUrl');
+            if (facebookUrl) {
+                disableSetupForm();
+                loadProducts();
+            }
         });
 
         function purchaseProduct(productId) {

@@ -29,12 +29,13 @@ function setupPaymentButton() {
     const cardElement = elements.create('card');
     cardElement.mount('#card-element');
 
-    const payButton = document.getElementById('payButton');
-    if (payButton) {
+    const payButtons = document.querySelectorAll('[id^="payButton"]');
+    payButtons.forEach(payButton => {
         payButton.addEventListener('click', async () => {
+            const productId = payButton.id.replace('payButton', '');
             const productName = document.querySelector('header h1').innerText;
             const productDescription = document.querySelector('main p').innerText;
-            const buyerEmail = document.getElementById('buyerEmail').value;
+            const vin = document.getElementById(`vin${productId}`).value;
             const response = await fetch('/create-payment-intent', {
                 method: 'POST',
                 headers: {
@@ -44,7 +45,7 @@ function setupPaymentButton() {
                     amount: 1000, // Amount in cents
                     productName: productName,
                     productDescription: productDescription,
-                    buyerEmail: buyerEmail
+                    vin: vin
                 })
             });
 
@@ -65,18 +66,25 @@ function setupPaymentButton() {
                 alert('Payment successful!');
             }
         });
-    }
+    });
+}
+
+function addToCart(productId) {
+    const vin = document.getElementById(`vin${productId}`).value;
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push({ productId, vin });
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert(`Product ${productId} added to cart with VIN ${vin}`);
 }
 
 function purchaseProduct(productId) {
-    const buyerEmail = document.getElementById('buyerEmail').value;
-
+    const vin = document.getElementById(`vin${productId}`).value;
     fetch('/purchase', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ productId, buyerEmail }),
+        body: JSON.stringify({ productId, vin }),
     })
     .then(response => response.json())
     .then(data => {
