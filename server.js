@@ -4,6 +4,8 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const { google } = require('googleapis');
+require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
 
@@ -36,7 +38,7 @@ app.post('/send-verification-email', (req, res) => {
         service: 'Outlook365',
         auth: {
             user: 'fpiersing@outlook.com',
-            pass: 'your-email-password' // Replace with your actual email password
+            pass: process.env.EMAIL_PASSWORD // Use environment variable for email password
         }
     });
 
@@ -68,29 +70,42 @@ app.get('/verify-email', (req, res) => {
     }
 });
 
-// Handle email sign-in verification
-app.post('/verify-email-signin', (req, res) => {
-    const transporter = nodemailer.createTransport({
-        service: 'Outlook365',
-        auth: {
-            user: 'fpiersing@outlook.com',
-            pass: 'your-email-password' // Replace with your actual email password
-        }
+// Handle email sign-in verification using OAuth2
+app.post('/verify-email-signin', async (req, res) => {
+    const oAuth2Client = new google.auth.OAuth2(
+        process.env.CLIENT_ID, // Use environment variable for client ID
+        process.env.CLIENT_SECRET, // Use environment variable for client secret
+        process.env.REDIRECT_URI // Use environment variable for redirect URI
+    );
+
+    oAuth2Client.setCredentials({
+        refresh_token: process.env.REFRESH_TOKEN // Use environment variable for refresh token
     });
 
-    const mailOptions = {
-        from: 'fpiersing@outlook.com',
-        to: 'fpiersing@outlook.com',
-        subject: 'Email Sign-In Verification',
-        text: 'This is a test email to verify sign-in.'
-    };
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return res.status(500).send('Error verifying email sign-in.');
-        }
-        res.status(200).send('Email sign-in verified successfully.');
-    });
+        const transporter = nodemailer.createTransport({
+            service: 'Outlook365',
+            auth: {
+                type: 'OAuth2',
+                user: 'fpiersing@outlook.com',
+                clientId: process.env.CLIENT_ID, // Use environment variable for client ID
+                clientSecret: process.env.CLIENT_SECRET, // Use environment variable for client secret
+                refreshToken: process.env.REFRESH_TOKEN, // Use environment variable for refresh token
+                accessToken: accessToken.token
+            }
+        });
+
+        transporter.verify((error, success) => {
+            if (error) {
+                return res.status(500).send('Error verifying email sign-in.');
+            }
+            res.status(200).send('Email sign-in verified successfully.');
+        });
+    } catch (error) {
+        res.status(500).send('Error verifying email sign-in.');
+    }
 });
 
 // Handle new product creation
