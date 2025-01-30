@@ -14,6 +14,9 @@ app.use(bodyParser.json());
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve static files from the 'templates' directory
+app.use(express.static(path.join(__dirname, 'templates')));
+
 // Serve the main HTML file
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates', 'index.html'));

@@ -4,20 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Information</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../script.js"></script>
 </head>
 <body>
     <h1>Product Information</h1>
-    <p>Delivery time in the USA: <strong>5-8 business days</strong></p>
-    <form>
-        <label for="product">Select Product Number (1-200):</label>
-        <input type="number" id="product" name="product" min="1" max="200" required>
-        <br><br>
-        <p>Pricing:</p>
-        <p>4 pairs of earrings for <strong>$10</strong> or <strong>$3</strong> for each pair.</p>
-        <br>
-        <p>If you have any questions, please contact us at <a href="mailto:fpiersing@outlook.com">fpiersing@outlook.com</a>.</p>
-        <br>
-        <input type="submit" value="Submit">
-    </form>
+    <div id="productDetails"></div>
+    <label for="vin">Enter VIN:</label>
+    <input type="text" id="vin" name="vin" required>
+    <button id="addToCartButton" onclick="addToCart()">Add to Cart</button>
+    <button id="payButton" onclick="purchaseProduct()">Purchase</button>
+    <script>
+        // Load product details from product_catalog.html
+        fetch('product_catalog.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('productDetails').innerHTML = data;
+            });
+
+        function addToCart() {
+            // Logic to add the product to the cart using data from product_catalog.html
+            console.log('Product added to cart!');
+        }
+
+        function purchaseProduct() {
+            // Logic to purchase the product using data from product_catalog.html
+            console.log('Product purchased!');
+        }
+    </script>
 </body>
 </html>
