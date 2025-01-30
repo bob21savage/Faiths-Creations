@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 const app = express();
 
@@ -19,6 +21,76 @@ app.get('/', (req, res) => {
 app.get('/product/:id', (req, res) => {
     const productId = req.params.id;
     res.sendFile(path.join(__dirname, 'templates', `product${productId}.html`));
+});
+
+// Handle email verification
+app.post('/send-verification-email', (req, res) => {
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}`;
+
+    // Store the token in a temporary file (for simplicity)
+    fs.writeFileSync('verificationToken.txt', verificationToken);
+
+    // Send the verification email
+    const transporter = nodemailer.createTransport({
+        service: 'Outlook365',
+        auth: {
+            user: 'fpiersing@outlook.com',
+            pass: 'your-email-password' // Replace with your actual email password
+        }
+    });
+
+    const mailOptions = {
+        from: 'fpiersing@outlook.com',
+        to: 'fpiersing@outlook.com',
+        subject: 'Email Verification',
+        text: `Please verify your email by clicking the following link: ${verificationLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send('Error sending verification email.');
+        }
+        res.status(200).send('Verification email sent successfully.');
+    });
+});
+
+// Handle email verification link
+app.get('/verify-email', (req, res) => {
+    const token = req.query.token;
+    const storedToken = fs.readFileSync('verificationToken.txt', 'utf8');
+
+    if (token === storedToken) {
+        fs.unlinkSync('verificationToken.txt'); // Delete the token file
+        res.sendFile(path.join(__dirname, 'templates', 'setup.html')); // Serve the setup form
+    } else {
+        res.status(400).send('Invalid verification token.');
+    }
+});
+
+// Handle email sign-in verification
+app.post('/verify-email-signin', (req, res) => {
+    const transporter = nodemailer.createTransport({
+        service: 'Outlook365',
+        auth: {
+            user: 'fpiersing@outlook.com',
+            pass: 'your-email-password' // Replace with your actual email password
+        }
+    });
+
+    const mailOptions = {
+        from: 'fpiersing@outlook.com',
+        to: 'fpiersing@outlook.com',
+        subject: 'Email Sign-In Verification',
+        text: 'This is a test email to verify sign-in.'
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send('Error verifying email sign-in.');
+        }
+        res.status(200).send('Email sign-in verified successfully.');
+    });
 });
 
 // Handle new product creation

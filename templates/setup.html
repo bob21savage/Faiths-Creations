@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Setup</title>
+</head>
+<body>
+    <header>
+        <h1>Setup</h1>
+    </header>
+    <main>
+        <form id="setupForm">
+            <label for="facebookUrl">Facebook Image URL:</label>
+            <input type="url" id="facebookUrl" name="facebookUrl" required>
+            <button type="submit">Save</button>
+        </form>
+    </main>
+    <script src="/script.js"></script>
+    <script>
+        document.getElementById('setupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const facebookUrl = document.getElementById('facebookUrl').value;
+            localStorage.setItem('facebookUrl', facebookUrl);
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

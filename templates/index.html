@@ -11,7 +11,11 @@
         <h1>Welcome to Our Online Shop</h1>
     </header>
     <main>
-        <section id="setupSection">
+        <section id="verificationSection">
+            <h2>Email Sign-In Verification</h2>
+            <button id="verifyEmailSignIn">Verify Email Sign-In</button>
+        </section>
+        <section id="setupSection" style="display: none;">
             <h2>Setup</h2>
             <form id="setupForm">
                 <label for="facebookUrl">Facebook Image URL:</label>
@@ -33,11 +37,27 @@
     </main>
     <script src="/script.js"></script>
     <script>
+        document.getElementById('verifyEmailSignIn').addEventListener('click', function() {
+            fetch('/verify-email-signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                if (message === 'Email sign-in verified successfully.') {
+                    document.getElementById('verificationSection').style.display = 'none';
+                    document.getElementById('setupSection').style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Error verifying email sign-in:', error));
+        });
+
         document.getElementById('setupForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const stripeKey = document.getElementById('stripeKey').value;
             const facebookUrl = document.getElementById('facebookUrl').value;
-            localStorage.setItem('stripeKey', stripeKey);
             localStorage.setItem('facebookUrl', facebookUrl);
             disableSetupForm();
             loadProducts();
@@ -48,9 +68,8 @@
         }
 
         function loadProducts(page = 1) {
-            const stripeKey = localStorage.getItem('stripeKey');
             const facebookUrl = localStorage.getItem('facebookUrl');
-            if (!stripeKey || !facebookUrl) {
+            if (!facebookUrl) {
                 return;
             }
 
@@ -94,9 +113,8 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            const stripeKey = localStorage.getItem('stripeKey');
             const facebookUrl = localStorage.getItem('facebookUrl');
-            if (stripeKey && facebookUrl) {
+            if (facebookUrl) {
                 disableSetupForm();
                 loadProducts();
             }
