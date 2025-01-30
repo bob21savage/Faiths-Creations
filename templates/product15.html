@@ -1,11 +1,24 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url='product.html'" />
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <title>Product 15</title>
 </head>
 <body>
-    <p>If you are not redirected, <a href="product.html">click here</a>.</p>
+    <header>
+        <h1>Product 15</h1>
+    </header>
+    <main>
+        <img src="https://example.com/images/15.jpg" alt="Product 15">
+        <p>Description of Product 15.</p>
+        <label for="vin">Enter VIN:</label>
+        <input type="text" id="vin15" name="vin" required>
+        <button id="addToCartButton15" onclick="addToCart(15)">Add to Cart</button>
+        <button id="payButton15" onclick="purchaseProduct(15)">Purchase</button>
+    </main>
+    <script src="../script.js"></script>
 </body>
 </html>

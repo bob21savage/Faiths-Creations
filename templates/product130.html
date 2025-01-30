@@ -3,10 +3,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url='product.html'" />
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <title>Product 130</title>
 </head>
 <body>
-    <p>If you are not redirected, <a href="product.html">click here</a>.</p>
+    <header>
+        <h1>Product 130</h1>
+    </header>
+    <main>
+        <img src="https://example.com/images/130.jpg" alt="Product 130">
+        <p>Description of Product 130.</p>
+        <label for="vin">Enter VIN:</label>
+        <input type="text" id="vin130" name="vin" required>
+        <button id="addToCartButton130" onclick="addToCart(130)">Add to Cart</button>
+        <button id="payButton130" onclick="purchaseProduct(130)">Purchase</button>
+    </main>
+    <script src="../script.js"></script>
 </body>
 </html>
