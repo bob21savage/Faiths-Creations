@@ -15,6 +15,7 @@
     "express": "^4.21.2",
     "googleapis": "^144.0.0",
     "gotta": "file:",
+    "nodemailer": "^6.10.0",
     "stripe": "^17.6.0"
   }
 }

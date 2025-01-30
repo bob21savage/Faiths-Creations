@@ -37,14 +37,14 @@ app.post('/send-verification-email', (req, res) => {
     const transporter = nodemailer.createTransport({
         service: 'Outlook365',
         auth: {
-            user: 'fpiersing@outlook.com',
-            pass: process.env.EMAIL_PASSWORD // Use environment variable for email password
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD
         }
     });
 
     const mailOptions = {
-        from: 'fpiersing@outlook.com',
-        to: 'fpiersing@outlook.com',
+        from: process.env.EMAIL_ADDRESS,
+        to: process.env.EMAIL_ADDRESS,
         subject: 'Email Verification',
         text: `Please verify your email by clicking the following link: ${verificationLink}`
     };
@@ -89,7 +89,7 @@ app.post('/verify-email-signin', async (req, res) => {
             service: 'Outlook365',
             auth: {
                 type: 'OAuth2',
-                user: 'fpiersing@outlook.com',
+                user: process.env.EMAIL_ADDRESS,
                 clientId: process.env.CLIENT_ID, // Use environment variable for client ID
                 clientSecret: process.env.CLIENT_SECRET, // Use environment variable for client secret
                 refreshToken: process.env.REFRESH_TOKEN, // Use environment variable for refresh token
@@ -181,6 +181,36 @@ app.post('/create-product', (req, res) => {
             return res.status(500).send('Error creating product page.');
         }
         res.status(200).send('Product page created successfully.');
+    });
+});
+
+// Handle purchase requests and send email notifications
+app.post('/purchase', (req, res) => {
+    const { productId } = req.body;
+
+    // Set up the email transporter
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail', // or your email service
+        auth: {
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD
+        },
+    });
+
+    // Email options
+    const mailOptions = {
+        from: process.env.EMAIL_ADDRESS, // Your email
+        to: process.env.EMAIL_ADDRESS, // Send notification to yourself
+        subject: 'New Purchase Notification',
+        text: `A new purchase has been made for product ID: ${productId}.`,
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send({ message: 'Error sending email.' });
+        }
+        res.send({ message: 'Purchase successful! A notification email has been sent to the developer.' });
     });
 });
 

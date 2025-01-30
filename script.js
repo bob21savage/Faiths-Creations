@@ -34,6 +34,7 @@ function setupPaymentButton() {
         payButton.addEventListener('click', async () => {
             const productName = document.querySelector('header h1').innerText;
             const productDescription = document.querySelector('main p').innerText;
+            const buyerEmail = document.getElementById('buyerEmail').value;
             const response = await fetch('/create-payment-intent', {
                 method: 'POST',
                 headers: {
@@ -42,7 +43,8 @@ function setupPaymentButton() {
                 body: JSON.stringify({ 
                     amount: 1000, // Amount in cents
                     productName: productName,
-                    productDescription: productDescription
+                    productDescription: productDescription,
+                    buyerEmail: buyerEmail
                 })
             });
 
@@ -64,6 +66,28 @@ function setupPaymentButton() {
             }
         });
     }
+}
+
+function purchaseProduct(productId) {
+    const buyerEmail = document.getElementById('buyerEmail').value;
+
+    fetch('/purchase', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, buyerEmail }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message); // Notify the user of the purchase status
+    })
+    .catch(error => console.error('Error during purchase:', error));
+}
+
+function confirmUrl() {
+    const facebookUrl = document.getElementById('facebookUrl').value;
+    alert("The Facebook URL has been set to: " + facebookUrl);
 }
 
 console.log('Welcome to the online shop!');
