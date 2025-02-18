@@ -10,6 +10,7 @@
 <body>
     <header>
         <h1>Product 110</h1>
+<<<<<<< HEAD
     </header>
     <main>
         <img src="https://example.com/images/110.jpg" alt="Product 110">
@@ -18,6 +19,30 @@
         <input type="text" id="vin110" name="vin" required>
         <button id="addToCartButton110" onclick="addToCart(110)">Add to Cart</button>
         <button id="payButton110" onclick="purchaseProduct(110)">Purchase</button>
+=======
+        <nav>
+            <a href="/">Home</a>
+            <a href="/catalog">Catalog</a>
+        </nav>
+    </header>
+    <main>
+        <div class="product-container">
+            <img src="https://example.com/images/110.jpg" alt="Product 110" class="product-image">
+            <div class="product-details">
+                <p class="product-description">Description of Product 110.</p>
+                <div class="product-form">
+                    <label for="vin110">Enter VIN:</label>
+                    <input type="text" id="vin110" name="vin" required pattern="[A-HJ-NPR-Z0-9]{17}" title="Please enter a valid 17-character VIN">
+                    <div class="button-group">
+                        <button id="addToCartButton110" onclick="addToCart(110)" class="btn btn-secondary">Add to Cart</button>
+                        <button id="payButton110" onclick="purchaseProduct(110)" class="btn btn-primary">Purchase Now</button>
+                    </div>
+                </div>
+                <div id="card-element" class="card-element"></div>
+                <div id="card-errors" class="error-message"></div>
+            </div>
+        </div>
+>>>>>>> f3e2d74 (best)
     </main>
     <script src="../script.js"></script>
 </body>
