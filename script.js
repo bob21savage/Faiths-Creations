@@ -19,8 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
 });
 
-// Initialize Stripe
-const stripe = Stripe('pk_test_your_publishable_key');
+// Initialize Stripe - replace with your publishable key
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_your_publishable_key';
+let stripe;
+
+try {
+    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+} catch (error) {
+    console.error('Failed to initialize Stripe:', error);
+    // Show a user-friendly error message
+    alert('Payment system is currently unavailable. Please try again later.');
+}
 
 function setupPaymentButton() {
     const payButtons = document.querySelectorAll('[id^="payButton"]');
@@ -34,8 +43,18 @@ function setupPaymentButton() {
 }
 
 async function purchaseProduct(productId) {
+    if (!stripe) {
+        alert('Payment system is not available. Please try again later.');
+        return;
+    }
+
     try {
         const productName = document.querySelector('header h1').innerText;
+        console.log('Starting checkout for:', {
+            productId,
+            productName
+        });
+
         const response = await fetch('/create-payment-intent', {
             method: 'POST',
             headers: {
@@ -49,10 +68,12 @@ async function purchaseProduct(productId) {
         });
 
         if (!response.ok) {
-            throw new Error('Payment creation failed');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Payment creation failed');
         }
 
         const { sessionId } = await response.json();
+        console.log('Got session ID:', sessionId);
         
         // Redirect to Stripe Checkout
         const result = await stripe.redirectToCheckout({
@@ -64,7 +85,7 @@ async function purchaseProduct(productId) {
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('There was an error processing your purchase. Please try again.');
+        alert('There was an error processing your purchase: ' + error.message);
     }
 }
 

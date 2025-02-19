@@ -1,9 +1,16 @@
 const express = require('express');
 const path = require('path');
+require('dotenv').config();
+
+// Check if Stripe key is available
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('ERROR: Stripe secret key is missing. Make sure STRIPE_SECRET_KEY is set in your .env file');
+    process.exit(1);
+}
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fs = require('fs');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 
 const app = express();
 
@@ -44,8 +51,18 @@ app.get('/product/:id', (req, res) => {
 // Create a Stripe checkout session
 app.post('/create-payment-intent', async (req, res) => {
     try {
+        if (!req.body.productId || !req.body.productName) {
+            throw new Error('Product ID and name are required');
+        }
+
         const { amount, productName, productId } = req.body;
         
+        console.log('Creating checkout session for:', {
+            productId,
+            productName,
+            amount
+        });
+
         // Create Stripe Checkout session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -93,6 +110,7 @@ app.post('/create-payment-intent', async (req, res) => {
             }
         });
 
+        console.log('Checkout session created:', session.id);
         res.json({ sessionId: session.id });
     } catch (error) {
         console.error('Error creating checkout session:', error);
