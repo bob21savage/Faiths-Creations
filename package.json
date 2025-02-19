@@ -1,21 +1,19 @@
 {
-  "name": "gotta",
+  "name": "faiths-creations",
   "version": "1.0.0",
-  "description": "https://dashboard.render.com/",
-  "main": "script.js",
+  "description": "Online shopping platform",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["shopping", "ecommerce"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "googleapis": "^144.0.0",
-    "gotta": "file:",
-    "nodemailer": "^6.10.0",
     "stripe": "^17.6.0"
   }
 }

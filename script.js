@@ -38,29 +38,6 @@ function setupPaymentButton() {
             const productId = payButton.id.replace('payButton', '');
             const productName = document.querySelector('header h1').innerText;
             const productDescription = document.querySelector('main p').innerText;
-<<<<<<< HEAD
-            const vin = document.getElementById(`vin${productId}`).value;
-            const response = await fetch('/create-payment-intent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    amount: 1000, // Amount in cents
-                    productName: productName,
-                    productDescription: productDescription,
-                    vin: vin
-                })
-            });
-
-            const { clientSecret } = await response.json();
-
-            const { error } = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: {
-                        name: 'Customer Name',
-=======
             const vinInput = document.getElementById(`vin${productId}`);
             
             if (!vinInput || !vinInput.value) {
@@ -75,7 +52,6 @@ function setupPaymentButton() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
->>>>>>> f3e2d74 (best)
                     },
                     body: JSON.stringify({ 
                         amount: 1000, // Amount in cents
@@ -118,17 +94,6 @@ function setupPaymentButton() {
 }
 
 function addToCart(productId) {
-<<<<<<< HEAD
-    const vin = document.getElementById(`vin${productId}`).value;
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push({ productId, vin });
-    localStorage.setItem('cart', JSON.stringify(cart));
-    alert(`Product ${productId} added to cart with VIN ${vin}`);
-}
-
-function purchaseProduct(productId) {
-    const vin = document.getElementById(`vin${productId}`).value;
-=======
     const vinInput = document.getElementById(`vin${productId}`);
     if (!vinInput || !vinInput.value) {
         alert('Please enter a valid VIN number');
@@ -167,15 +132,11 @@ function purchaseProduct(productId) {
     const vin = vinInput.value;
     const productName = document.querySelector('header h1').innerText;
     
->>>>>>> f3e2d74 (best)
     fetch('/purchase', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-<<<<<<< HEAD
-        body: JSON.stringify({ productId, vin }),
-=======
         body: JSON.stringify({ 
             productId, 
             vin,
@@ -187,7 +148,6 @@ function purchaseProduct(productId) {
             throw new Error('Purchase failed');
         }
         return response.json();
->>>>>>> f3e2d74 (best)
     })
     .then(data => {
         alert(data.message);

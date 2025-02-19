@@ -3,130 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Online Shop</title>
+    <link rel="stylesheet" href="../public/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Faith's Creations - Exclusive Products</title>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Our Online Shop</h1>
+    <header class="main-header">
+        <div class="header-content">
+            <h1>Faith's Creations</h1>
+            <nav>
+                <a href="/" class="active"><i class="fas fa-home"></i> Home</a>
+                <a href="/catalog"><i class="fas fa-shopping-bag"></i> Shop All</a>
+                <a href="#featured"><i class="fas fa-star"></i> Featured</a>
+            </nav>
+        </div>
     </header>
+
     <main>
-        <section id="verificationSection">
-            <h2>Email Sign-In Verification</h2>
-            <button id="verifyEmailSignIn">Verify Email Sign-In</button>
-        </section>
-        <section id="setupSection" style="display: none;">
-            <h2>Setup</h2>
-            <form id="setupForm">
-                <label for="facebookUrl">Facebook Image URL:</label>
-                <input type="url" id="facebookUrl" name="facebookUrl" required>
-                <button type="submit">Save</button>
-            </form>
-        </section>
-        <section class="products" style="display: none;">
-            <h2>Products</h2>
-            <div class="product-list" id="product-list">
-                <!-- Products will be loaded here dynamically -->
-            </div>
-            <div class="pagination">
-                <button id="prevPage" disabled>Previous</button>
-                <span id="pageInfo"></span>
-                <button id="nextPage">Next</button>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Discover Unique Treasures</h2>
+                <p>Explore our handpicked collection of exceptional products</p>
+                <a href="/catalog" class="cta-button">Shop Now <i class="fas fa-arrow-right"></i></a>
             </div>
         </section>
-        <section id="purchaseSection" style="display: none;">
-            <h2>Purchase</h2>
-            <button id="payButton" onclick="purchaseProduct(productId)">Purchase</button>
+
+        <section id="featured" class="featured-section">
+            <div class="section-header">
+                <h2>Featured Products</h2>
+                <p>Our most popular items, carefully selected for you</p>
+            </div>
+            <div class="product-grid">
+                <div class="product-card featured">
+                    <div class="product-badge">Featured</div>
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&h=400&q=80" alt="Premium Sneakers" class="product-thumbnail">
+                    <div class="product-info">
+                        <h3>Premium Sneakers</h3>
+                        <p class="product-description">Limited Edition Collection</p>
+                        <a href="/product/1" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+
+                <div class="product-card featured">
+                    <div class="product-badge">Featured</div>
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&h=400&q=80" alt="Smart Watch" class="product-thumbnail">
+                    <div class="product-info">
+                        <h3>Smart Watch</h3>
+                        <p class="product-description">Next-Gen Technology</p>
+                        <a href="/product/2" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+
+                <div class="product-card featured">
+                    <div class="product-badge">Featured</div>
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&h=400&q=80" alt="Premium Headphones" class="product-thumbnail">
+                    <div class="product-info">
+                        <h3>Premium Headphones</h3>
+                        <p class="product-description">Immersive Sound</p>
+                        <a href="/product/3" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories-section">
+            <div class="section-header">
+                <h2>Shop by Category</h2>
+                <p>Find exactly what you're looking for</p>
+            </div>
+            <div class="categories-grid">
+                <a href="/catalog?category=electronics" class="category-card">
+                    <i class="fas fa-laptop"></i>
+                    <h3>Electronics</h3>
+                </a>
+                <a href="/catalog?category=fashion" class="category-card">
+                    <i class="fas fa-tshirt"></i>
+                    <h3>Fashion</h3>
+                </a>
+                <a href="/catalog?category=accessories" class="category-card">
+                    <i class="fas fa-glasses"></i>
+                    <h3>Accessories</h3>
+                </a>
+                <a href="/catalog?category=lifestyle" class="category-card">
+                    <i class="fas fa-heart"></i>
+                    <h3>Lifestyle</h3>
+                </a>
+            </div>
+        </section>
+
+        <section class="why-choose-us">
+            <div class="section-header">
+                <h2>Why Choose Us</h2>
+                <p>We pride ourselves on quality and service</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-shipping-fast"></i>
+                    <h3>Fast Shipping</h3>
+                    <p>Quick delivery to your doorstep</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure Payments</h3>
+                    <p>Safe and encrypted transactions</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-award"></i>
+                    <h3>Quality Products</h3>
+                    <p>Carefully selected items</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>24/7 Support</h3>
+                    <p>Always here to help you</p>
+                </div>
+            </div>
         </section>
     </main>
-    <script src="/script.js"></script>
-    <script>
-        document.getElementById('verifyEmailSignIn').addEventListener('click', function() {
-            fetch('/verify-email-signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.text())
-            .then(message => {
-                alert(message);
-                if (message === 'Email sign-in verified successfully.') {
-                    document.getElementById('verificationSection').style.display = 'none';
-                    document.getElementById('setupSection').style.display = 'block';
-                }
-            })
-            .catch(error => console.error('Error verifying email sign-in:', error));
-        });
 
-        document.getElementById('setupForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const facebookUrl = document.getElementById('facebookUrl').value;
-            localStorage.setItem('facebookUrl', facebookUrl);
-            disableSetupForm();
-            loadProducts();
-        });
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Faith's Creations</h3>
+                <p>Your destination for unique and quality products.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="/catalog">Shop All</a>
+                <a href="#featured">Featured</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p><i class="fas fa-envelope"></i> support@faithscreations.com</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Faith's Creations. All rights reserved.</p>
+        </div>
+    </footer>
 
-        function disableSetupForm() {
-            document.getElementById('setupForm').style.display = 'none';
-        }
-
-        function loadProducts(page = 1) {
-            const facebookUrl = localStorage.getItem('facebookUrl');
-            if (!facebookUrl) {
-                return;
-            }
-
-            document.querySelector('.products').style.display = 'block';
-            const productsPerPage = 20;
-            const productCatalog = [];
-            for (let i = 1; i <= 200; i++) {
-                productCatalog.push({ id: i, name: `Product ${i}`, imageUrl: `${facebookUrl}${i}.jpg` });
-            }
-
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = '';
-            const start = (page - 1) * productsPerPage;
-            const end = start + productsPerPage;
-            const paginatedProducts = productCatalog.slice(start, end);
-
-            paginatedProducts.forEach(product => {
-                const productItem = document.createElement('a');
-                productItem.href = `product${product.id}.html`;
-                productItem.className = 'product-item';
-                productItem.innerHTML = `
-                    <img src="${product.imageUrl}" alt="${product.name}">
-                    <h3>${product.name}</h3>
-                `;
-                productList.appendChild(productItem);
-            });
-
-            document.getElementById('pageInfo').innerText = `Page ${page} of ${Math.ceil(productCatalog.length / productsPerPage)}`;
-            document.getElementById('prevPage').disabled = page === 1;
-            document.getElementById('nextPage').disabled = page === Math.ceil(productCatalog.length / productsPerPage);
-        }
-
-        document.getElementById('prevPage').addEventListener('click', () => {
-            const currentPage = parseInt(document.getElementById('pageInfo').innerText.split(' ')[1]);
-            loadProducts(currentPage - 1);
-        });
-
-        document.getElementById('nextPage').addEventListener('click', () => {
-            const currentPage = parseInt(document.getElementById('pageInfo').innerText.split(' ')[1]);
-            loadProducts(currentPage + 1);
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const facebookUrl = localStorage.getItem('facebookUrl');
-            if (facebookUrl) {
-                disableSetupForm();
-                loadProducts();
-            }
-        });
-
-        function purchaseProduct(productId) {
-            // Add purchase logic here
-        }
-    </script>
+    <script src="../script.js"></script>
 </body>
 </html>
