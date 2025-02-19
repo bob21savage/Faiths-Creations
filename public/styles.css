@@ -75,7 +75,7 @@ nav a i {
 /* Hero Section */
 .hero-section {
     background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)),
-                url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1920&q=80');
+                url('/images/hero.jpg');
     background-size: cover;
     background-position: center;
     color: white;
@@ -263,6 +263,46 @@ nav a i {
 
 .feature-card p {
     color: #666;
+}
+
+/* Success and Cancel Pages */
+.success-section, .cancel-section {
+    padding: 5rem 2rem;
+    text-align: center;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-content, .cancel-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.success-content i, .cancel-content i {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+}
+
+.success-content i {
+    color: var(--success-color);
+}
+
+.cancel-content i {
+    color: var(--accent-color);
+}
+
+.success-content h2, .cancel-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+}
+
+.success-content p, .cancel-content p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
 }
 
 /* Footer Styles */
