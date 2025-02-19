@@ -87,6 +87,10 @@ app.post('/create-payment-intent', async (req, res) => {
                     },
                 },
             ],
+            metadata: {
+                productId: productId,
+                productName: productName
+            }
         });
 
         res.json({ sessionId: session.id });
@@ -121,8 +125,9 @@ app.post('/webhook', async (req, res) => {
             name: session.customer_details.name,
             shipping: session.shipping_details,
             amount: session.amount_total,
-            items: session.line_items,
-            orderId: session.id
+            orderId: session.id,
+            productId: session.metadata.productId, // Get productId from metadata
+            productName: session.metadata.productName // Get productName from metadata
         };
 
         // Save order to JSON file
@@ -146,6 +151,8 @@ app.post('/webhook', async (req, res) => {
                 <h1>New Order Received!</h1>
                 <h2>Order Details:</h2>
                 <p><strong>Order ID:</strong> ${customer.orderId}</p>
+                <p><strong>Product ID:</strong> ${customer.productId}</p>
+                <p><strong>Product Name:</strong> ${customer.productName}</p>
                 <p><strong>Customer Name:</strong> ${customer.name}</p>
                 <p><strong>Customer Email:</strong> ${customer.email}</p>
                 <h3>Shipping Address:</h3>
@@ -168,6 +175,7 @@ app.post('/webhook', async (req, res) => {
                 <p>We've received your order and will process it shortly.</p>
                 <h2>Order Details:</h2>
                 <p><strong>Order ID:</strong> ${customer.orderId}</p>
+                <p><strong>Product:</strong> ${customer.productName} (ID: ${customer.productId})</p>
                 <h3>Shipping Address:</h3>
                 <p>${customer.shipping.address.line1}</p>
                 <p>${customer.shipping.address.line2 || ''}</p>
