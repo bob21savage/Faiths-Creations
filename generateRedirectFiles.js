@@ -46,8 +46,6 @@ const redirectTemplate = (productId) => `
             <div class="product-details">
                 <p class="product-description">High-quality product with premium materials and excellent craftsmanship. Perfect for those who appreciate fine details and lasting quality.</p>
                 <div class="product-form">
-                    <label for="vin${productId}">Enter VIN:</label>
-                    <input type="text" id="vin${productId}" name="vin" required pattern="[A-HJ-NPR-Z0-9]{17}" title="Please enter a valid 17-character VIN">
                     <div class="button-group">
                         <button id="addToCartButton${productId}" onclick="addToCart(${productId})" class="btn btn-secondary">Add to Cart</button>
                         <button id="payButton${productId}" onclick="purchaseProduct(${productId})" class="btn btn-primary">Purchase Now</button>
@@ -101,7 +99,8 @@ catalogContent += `
         </div>
     </main>
 </body>
-</html>`;
+</html>
+`;
 
 fs.writeFileSync(catalogFilePath, catalogContent);
-console.log('Product catalog with images generated successfully!');
+console.log(`Created: ${catalogFilePath}`);
