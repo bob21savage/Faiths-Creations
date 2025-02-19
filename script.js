@@ -19,52 +19,53 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
 });
 
+// Initialize Stripe
+const stripe = Stripe('pk_test_your_publishable_key');
+
 function setupPaymentButton() {
-    const stripeKey = localStorage.getItem('stripeKey');
-    if (!stripeKey) {
-        console.error('Stripe publishable key is missing.');
-        return;
-    }
-
-    const stripe = Stripe(stripeKey);
-    const elements = stripe.elements();
-    const cardElement = elements.create('card');
-    const cardElementMount = document.getElementById('card-element');
-    if (cardElementMount) {
-        cardElement.mount('#card-element');
-    }
-
     const payButtons = document.querySelectorAll('[id^="payButton"]');
     payButtons.forEach(payButton => {
-        payButton.addEventListener('click', async () => {
+        payButton.addEventListener('click', async (event) => {
+            event.preventDefault();
             const productId = payButton.id.replace('payButton', '');
-            const productName = document.querySelector('header h1').innerText;
-            
-            try {
-                const response = await fetch('/create-payment-intent', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        amount: 1000, // Amount in cents
-                        productName: productName,
-                        productId: productId
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Payment creation failed');
-                }
-
-                const data = await response.json();
-                window.location.href = data.url;
-            } catch (err) {
-                console.error('Payment error:', err);
-                alert('An error occurred during payment. Please try again.');
-            }
+            purchaseProduct(productId);
         });
     });
+}
+
+async function purchaseProduct(productId) {
+    try {
+        const productName = document.querySelector('header h1').innerText;
+        const response = await fetch('/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                amount: 1000, // Amount in cents
+                productName: productName,
+                productId: productId
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Payment creation failed');
+        }
+
+        const { sessionId } = await response.json();
+        
+        // Redirect to Stripe Checkout
+        const result = await stripe.redirectToCheckout({
+            sessionId: sessionId
+        });
+
+        if (result.error) {
+            throw new Error(result.error.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('There was an error processing your purchase. Please try again.');
+    }
 }
 
 // Cart functionality
