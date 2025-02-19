@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     setupPaymentButton();
+    loadCart();
     updateCartUI();
 });
 
@@ -38,7 +39,6 @@ function setupPaymentButton() {
         payButton.addEventListener('click', async () => {
             const productId = payButton.id.replace('payButton', '');
             const productName = document.querySelector('header h1').innerText;
-            const productDescription = document.querySelector('main p').innerText;
             
             try {
                 const response = await fetch('/create-payment-intent', {
@@ -49,7 +49,7 @@ function setupPaymentButton() {
                     body: JSON.stringify({ 
                         amount: 1000, // Amount in cents
                         productName: productName,
-                        productDescription: productDescription
+                        productId: productId
                     })
                 });
 
@@ -57,24 +57,8 @@ function setupPaymentButton() {
                     throw new Error('Payment creation failed');
                 }
 
-                const { clientSecret } = await response.json();
-
-                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: cardElement,
-                        billing_details: {
-                            name: 'Customer Name',
-                        },
-                    },
-                });
-
-                if (error) {
-                    alert(error.message);
-                } else {
-                    alert('Payment successful! Your order has been placed.');
-                    // Optionally redirect to a success page
-                    window.location.href = '/payment-success';
-                }
+                const data = await response.json();
+                window.location.href = data.url;
             } catch (err) {
                 console.error('Payment error:', err);
                 alert('An error occurred during payment. Please try again.');
@@ -86,8 +70,22 @@ function setupPaymentButton() {
 // Cart functionality
 let cart = [];
 
+function loadCart() {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCartUI();
+    }
+}
+
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 function addToCart(productId, productName, price) {
-    cart.push({ productId, productName, price });
+    const item = { productId, productName, price };
+    cart.push(item);
+    saveCart();
     updateCartUI();
     alert(`${productName} added to cart!`);
 }
@@ -97,46 +95,18 @@ function updateCartUI() {
     if (cartCount) {
         cartCount.textContent = cart.length;
     }
-}
 
-async function purchaseProduct(productId, productName, price) {
-    try {
-        // Create a payment intent
-        const response = await fetch('/create-payment-intent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                amount: price * 100, // Convert to cents
-                productName,
-                productId
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const { sessionId } = await response.json();
-        
-        // Redirect to Stripe Checkout
-        const stripe = Stripe('your_publishable_key'); // Replace with your Stripe publishable key
-        const { error } = await stripe.redirectToCheckout({
-            sessionId
-        });
-
-        if (error) {
-            throw error;
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('There was an error processing your purchase. Please try again.');
+    // Update cart total if it exists
+    const cartTotal = document.getElementById('cartTotal');
+    if (cartTotal) {
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        cartTotal.textContent = `$${total.toFixed(2)}`;
     }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
     updateCartUI();
 });
 

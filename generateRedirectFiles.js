@@ -47,7 +47,7 @@ const redirectTemplate = (productId) => `
                 <p class="product-description">High-quality product with premium materials and excellent craftsmanship. Perfect for those who appreciate fine details and lasting quality.</p>
                 <div class="product-form">
                     <div class="button-group">
-                        <button id="addToCartButton${productId}" onclick="addToCart(${productId})" class="btn btn-secondary">Add to Cart</button>
+                        <button id="addToCartButton${productId}" onclick="addToCart(${productId}, 'Product ${productId}', 10.00)" class="btn btn-secondary">Add to Cart</button>
                         <button id="payButton${productId}" onclick="purchaseProduct(${productId})" class="btn btn-primary">Purchase Now</button>
                     </div>
                 </div>
